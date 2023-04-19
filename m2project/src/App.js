@@ -14,8 +14,23 @@ import {
 } from "firebase/firestore";
 import PostList from "./components/PostList";
 import Overlay from "./components/Overlay";
+import NavBar from "./components/NavBar";
+import {auth} from "./firebase-config";
+import {onAuthStateChanged} from "firebase/auth";
 
 function App() {
+
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+      onAuthStateChanged(auth, (currentUser) => {
+          setUser(currentUser);
+      });
+  }, [])
+
+  //console.log("User from apps "+ user);
+
+  let warningLog = "You must be logged in to edit";
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescr, setNewDescr] = useState("");
@@ -30,12 +45,15 @@ function App() {
   //Overlay form boolean
   const [isOpen, setIsOpen] = useState(false);
 
-  const [isAlphabetical, setIsAlphabetical] = useState(true);
+  const [isAlphabetical, setIsAlphabetical] = useState(false);
+  //console.log("First Alphabetical is = "+isAlphabetical);
 
   const [isUpdating, setIsUpdating] = useState(false);
 
   //Get all the list to render
   const getMovies = async() => {
+    //toggleIsAlphabetical(!isAlphabetical);
+    //console.log("Alphabetical is = "+isAlphabetical);
     if(isAlphabetical){
     const data = await getDocs(query(moviesColectionRef, orderBy("title")));
     setMovies(data.docs.map((doc)=>({...doc.data(), id: doc.id})));
@@ -72,6 +90,10 @@ function App() {
 
   //Delete entry
   const deleteMovie = async(id) =>{
+    if(user===null){
+      alert(warningLog);
+      return;
+    }
     const movDoc = doc(db, "movies", id);
     await deleteDoc(movDoc);
     getMovies();
@@ -79,6 +101,10 @@ function App() {
 
   //Increase by 1 rating
   const updateRating = async(id,rating) => {
+    if(user===null){
+      alert(warningLog);
+      return;
+    }
     const movieDoc = doc(db, "movies", id)
     //console.log(movieDoc.title);
     const newFields = {rating: rating+1};
@@ -106,6 +132,10 @@ function App() {
   };
 
   const getMovie = async(id) => {
+    if(user===null){
+      alert(warningLog);
+      return;
+    }
     setIsUpdating(true);
     toggleOverlay();
     setEditId(id);
@@ -130,6 +160,10 @@ return
 
   //displqy Poster name in alert
   const handlePoster = async (poster) => {
+    if(user===null){
+      alert(warningLog);
+      return;
+    }
     alert("Posted by " + poster)
   };
 
@@ -150,16 +184,19 @@ return
   const toggleIsAlphabetical = () =>
   {
     setIsAlphabetical(!isAlphabetical);
+    //console.log("in toggle Alphabetical is = "+isAlphabetical);
     getMovies();
   }
 
   return (
     <div className="App">
       <div className="container">
-      <h1>MAELSTRÖM 2</h1>
-      <button className="showButton" onClick={toggleOverlay}>ADD NEW ENTRY</button>
-      <button className="showButton" onClick={toggleIsAlphabetical}>{isAlphabetical?"ALPHABETICAL":"BY RATING"}</button>
-
+      <NavBar/>
+      <div className="topButton">
+      <button id="topButElem1" disabled = {user===null} className="showButton" onClick={toggleOverlay}>{user===null?"MUST BE LOGGED IN TO POST":"ADD NEW ENTRY"}</button>
+      <div id="topButElem2"></div>
+      <button id="topButElem2" className="showButton" onClick={toggleIsAlphabetical}>{isAlphabetical?"SORT ALPHABETICALY":"SORT BY RATING"}</button>
+      </div>
         <Overlay isOpen={isOpen} onClose={toggleOverlay}>
           <div className="todoForm">
       <label className="textLi">FILM TITLE</label>

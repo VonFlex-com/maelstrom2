@@ -131,11 +131,11 @@ body{
 }
 
 .showButton{
+  height:fit-content;
   border: solid 2px white;
   border-radius: 2px;
   padding:12px 20px 12px 20px;
-  flex:1 10px;
-  max-height: 10%;
+  flex:1;
   background-color:transparent;
   font-size: 0.9em;
   font-weight: 700;
@@ -143,7 +143,7 @@ body{
 }
 
 .showButton:hover{
-  background-color: rgb(22, 25, 37);
+  background-color: rgb(48, 61, 116);
   border: solid 2px rgb(223, 241, 255);
   color:rgb(255, 255, 255);
 }
@@ -159,6 +159,25 @@ button{
 button:hover{
   background-color: rgb(193, 32, 208);
   border: solid 2px rgb(221, 103, 34);
+}
+
+.topButton{
+  width: 100%;
+  margin-top: 6%;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  justify-content: space-between;
+  background-color: transparent;
+  height: 3em;
+}
+
+#topButElem1{
+ flex:2;
+}
+
+#topButElem2{
+  flex:1;
 }
 
 .buttonSubmit{
